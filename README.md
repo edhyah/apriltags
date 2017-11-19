@@ -6,7 +6,7 @@ This library was modified from Michael Kaess's AprilTags C++ Library
 which can be found at:
 https://people.csail.mit.edu/kaess/apriltags
 
-** Usage **
+## Usage ##
 
 Compile the library:
 > $ make
