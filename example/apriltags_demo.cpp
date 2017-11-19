@@ -289,7 +289,7 @@ public:
 
     // optional: prepare serial port for communication with Arduino
     if (m_arduino) {
-      m_serial.open("/dev/ttyACM0");
+      m_serial.open("/dev/ttyS0");
     }
   }
 
@@ -326,7 +326,7 @@ public:
       v4l2_set_control(device, V4L2_CID_BRIGHTNESS, m_brightness*256);
     }
     v4l2_close(device);
-#endif 
+#endif
 
     // find and open a USB camera (built in laptop camera, web cam etc)
     m_cap = cv::VideoCapture(m_deviceId);
