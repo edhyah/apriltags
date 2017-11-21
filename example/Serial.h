@@ -12,13 +12,13 @@
 class Serial {
 
   int m_serialPort; // file description for the serial port
-  
+
 public:
 
   Serial() : m_serialPort(-1) {}
 
   // open a serial port connection
-  void open(const std::string& port, int rate = 115200);
+  void open(const std::string& port, int rate = 9600);
 
   // read a single character
   int read() const;
