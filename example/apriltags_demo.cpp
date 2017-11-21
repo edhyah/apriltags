@@ -80,6 +80,12 @@ extern char *optarg;
 // For Arduino: locally defined serial port access class
 #include "Serial.h"
 
+// Set precision for printing floats onto host console
+#include <iomanip>
+
+// Suppress output on host if not defined
+//#define VERBOSE
+
 
 const char* windowName = "apriltags_demo";
 
@@ -344,8 +350,12 @@ public:
   }
 
   void print_detection(AprilTags::TagDetection& detection) const {
+#ifdef VERBOSE
     cout << "  Id: " << detection.id
          << " (Hamming: " << detection.hammingDistance << ")";
+#else
+    cout << "Id: " << detection.id << " ";
+#endif
 
     // recovering the relative pose of a tag:
 
@@ -367,8 +377,14 @@ public:
     double yaw, pitch, roll;
     wRo_to_euler(fixed_rot, yaw, pitch, roll);
 
-    cout << "  distance=" << translation.norm()
-         << "m, x=" << translation(0)
+    cout
+#ifdef VERBOSE
+         << "  distance=" << translation.norm()
+         << "m, "
+#else
+         << fixed << setprecision(3)
+#endif
+         << "x=" << translation(0)
          << ", y=" << translation(1)
          << ", z=" << translation(2)
          << ", yaw=" << yaw
@@ -402,7 +418,9 @@ public:
     }
 
     // print out each detection
+#ifdef VERBOSE
     cout << detections.size() << " tags detected:" << endl;
+#endif
     for (int i=0; i<detections.size(); i++) {
       print_detection(detections[i]);
     }
@@ -424,6 +442,7 @@ public:
         Eigen::Matrix3d rotation;
         detections[0].getRelativeTranslationRotation(m_tagSize, m_fx, m_fy, m_px, m_py,
                                                      translation, rotation);
+        /*
         m_serial.print(detections[0].id);
         m_serial.print(",");
         m_serial.print(translation(0));
@@ -432,9 +451,28 @@ public:
         m_serial.print(",");
         m_serial.print(translation(2));
         m_serial.print("\n");
+        */
+
+        switch(detections[0].id) {
+            case 6:
+                break;
+            case 7:
+                break;
+            case 8:
+                break;
+            case 9:
+                break;
+            case 10:
+                break;
+            case 11:
+                break;
+            default:
+                m_serial.print("No tag detected.");
+                break;
+        }
+
       } else {
-        // no tag detected: tag ID = -1
-        m_serial.print("-1,0.0,0.0,0.0\n");
+        m_serial.print("No tag detected.");
       }
     }
   }
@@ -473,12 +511,14 @@ public:
       processImage(image, image_gray);
 
       // print out the frame rate at which image frames are being processed
+#ifdef VERBOSE
       frame++;
       if (frame % 10 == 0) {
         double t = tic();
         cout << "  " << 10./(t-last_t) << " fps" << endl;
         last_t = t;
       }
+#endif
 
       // exit if any key is pressed
       if (cv::waitKey(1) >= 0) break;
