@@ -398,12 +398,16 @@ public:
     // for suitable factors.
   }
 
-  void processImage(cv::Mat& image, cv::Mat& image_gray) {
+  void processImage(cv::Mat& unflipped, cv::Mat& image_gray) {
     // alternative way is to grab, then retrieve; allows for
     // multiple grab when processing below frame rate - v4l keeps a
     // number of frames buffered, which can lead to significant lag
     //      m_cap.grab();
     //      m_cap.retrieve(image);
+
+    // flip images to put images into user's POV from camera's POV
+    cv::Mat image;
+    cv::flip(unflipped, image, -1);
 
     // detect April tags (requires a gray scale image)
     cv::cvtColor(image, image_gray, CV_BGR2GRAY);
