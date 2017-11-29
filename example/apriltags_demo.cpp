@@ -456,19 +456,64 @@ public:
         m_serial.print(translation(2));
         m_serial.print("\n");
         */
+        Eigen::Matrix3d F;
+        F <<
+            1, 0,  0,
+            0,  -1,  0,
+            0,  0,  1;
+        Eigen::Matrix3d fixed_rot = F*rotation;
+        double yaw, pitch, roll;
+        wRo_to_euler(fixed_rot, yaw, pitch, roll);
+
+        // Transform translation for user
+        //
+        // Currently:   +x points through the tag,
+        //              +y points down on plane of tag,
+        //              +z points left on plane of tag
+        //
+        // Now: +newX points down on plane of tag (same as y),
+        //      +newY points right on plane of tag (same as -z),
+        //      +newZ points out of tag (same as -x)
+        double heightOffset = 0.387;
+        double newX, newY, newZ;
+        newX = translation(1);
+        newY = -translation(2);
+        newZ = heightOffset - translation(0);
+
+        // Format of data:
+        //  translationX,translationY,translationZ,rotationX,rotationY,rotationZ
+        //
+        // Note: rotation around axis is counter-clockwise
 
         switch(detections[0].id) {
             case 6:
+                m_serial.print(newX);
+                m_serial.print(",");
+                m_serial.print(newY);
+                m_serial.print(",");
+                m_serial.print(newZ);
+                m_serial.print(",");
+                m_serial.print(pitch);
+                m_serial.print(",");
+                m_serial.print(roll);
+                m_serial.print(",");
+                m_serial.print(yaw);
+                m_serial.print("\n");
                 break;
             case 7:
+                m_serial.print("No tag detected.");
                 break;
             case 8:
+                m_serial.print("No tag detected.");
                 break;
             case 9:
+                m_serial.print("No tag detected.");
                 break;
             case 10:
+                m_serial.print("No tag detected.");
                 break;
             case 11:
+                m_serial.print("No tag detected.");
                 break;
             default:
                 m_serial.print("No tag detected.");
